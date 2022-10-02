@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Server Chat App</string>
+    <string name="message">message</string>
+    <string name="send">Send</string>
+    <string name="welcome">Welcome</string>
+    <string name="port">port</string>
+    <string name="default_port">3000</string>
+    <string name="create_server">Create Server</string>
+</resources>

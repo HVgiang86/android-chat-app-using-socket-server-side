@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp">
+
+    <ImageView
+        android:id="@+id/avatar_imv"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_user"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:scaleType="fitXY"
+        />
+
+    <TextView
+        android:id="@+id/message_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/avatar_imv"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:layout_marginEnd="50dp"
+        android:gravity="start"
+        android:clickable="true"
+        android:layout_alignBottom="@id/avatar_imv"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/white"
+        android:background="@drawable/chat_item_background"
+        />
+
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/ic_file_present"
+        android:layout_alignStart="@id/message_content"
+        android:layout_alignTop="@id/message_content"
+        android:layout_alignBottom="@id/message_content"
+        android:scaleType="center"
+        />
+</RelativeLayout>
