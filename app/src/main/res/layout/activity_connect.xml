@@ -6,13 +6,43 @@
     android:layout_height="match_parent"
     tools:context=".activity.ConnectActivity">
 
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/username_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/username_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/username"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            />
+
+        <EditText
+            android:id="@+id/username_edt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/username"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:inputType="text" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
     <TextView
         android:id="@+id/welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/username_bar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:text="@string/welcome"
         />
@@ -27,24 +57,41 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         />
 
-    <EditText
-        android:id="@+id/server_port"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/port_server_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/server_ip"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:hint="@string/port"
-        android:inputType="number"
-        android:text="@string/default_port"
-        />
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/port"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            />
+        <EditText
+            android:id="@+id/server_port"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:hint="@string/port"
+            android:inputType="number"
+            android:text="@string/default_port"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
 
     <Button
         android:id="@+id/create_server_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/server_port"
+        app:layout_constraintTop_toBottomOf="@id/port_server_bar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:text="@string/create_server"

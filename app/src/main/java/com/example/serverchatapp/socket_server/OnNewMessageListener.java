@@ -20,11 +20,14 @@ public class OnNewMessageListener implements IO.OnNewMessageListener {
 
     @Override
     public void onNewMessage(SingleSocket socket, MessagePackage messagePackage) {
+
+        Server.getInstance().emitAllExcept((MySocket) socket,messagePackage);
+
         if (messagePackage.isFile()) {
             saveFileFromStream(messagePackage);
         } else {
             if (messagePackage.getEvent().equalsIgnoreCase(IO.SEND_MESSAGE)) {
-                Message message = new Message(messagePackage.getMessage(), false, false);
+                Message message = new Message(messagePackage.getSender(), messagePackage.getMessage(), false, false);
                 MessageManager.getInstance().addMessage(message);
             } else {
                 socket.disconnectListener.onDisconnect(socket);
@@ -33,6 +36,7 @@ public class OnNewMessageListener implements IO.OnNewMessageListener {
     }
 
     private void saveFileFromStream(MessagePackage message) {
+
         String filename = message.getMessage();
 
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -53,7 +57,7 @@ public class OnNewMessageListener implements IO.OnNewMessageListener {
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             bos.write(bytes);
             bos.close();
-            Message msg = new Message(file.getPath(), false, true);
+            Message msg = new Message(message.getSender(), file.getPath(), false, true);
             MessageManager.getInstance().addMessage(msg);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

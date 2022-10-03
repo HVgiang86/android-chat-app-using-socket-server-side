@@ -15,6 +15,7 @@ public class ConnectActivity extends AppCompatActivity {
     private Server server;
     private TextView ipServerTv;
     private EditText portServerEdt;
+    private EditText usernameEdt;
 
 
     @Override
@@ -24,20 +25,22 @@ public class ConnectActivity extends AppCompatActivity {
 
         ipServerTv = findViewById(R.id.server_ip);
         portServerEdt = findViewById(R.id.server_port);
+        usernameEdt = findViewById(R.id.username_edt);
 
         server = Server.getInstance();
-        int i = server.getIpAddress().indexOf("Server",5);
-        String ipServer = server.getIpAddress().substring(0,i);
-        ipServerTv.setText(ipServer);
+        ipServerTv.setText(Server.getIpAddress());
+
     }
 
     public void createServer(View v) {
         String portStr = portServerEdt.getText().toString().trim();
-        if (portStr.length() == 0)
+        String username = usernameEdt.getText().toString().trim();
+        if (portStr.length() == 0 || username.length() == 0)
             return;
 
         int port = Integer.parseInt(portStr);
         server.createServer(port);
+        server.setUsername(username);
         Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
     }

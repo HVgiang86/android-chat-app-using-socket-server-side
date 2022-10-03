@@ -23,6 +23,7 @@ public class Server {
     List<MySocket> socketList;
     private boolean hasClientConnected = false;
     private ServerSocket serverSocket;
+    private String username;
 
     //Singleton
     private Server() {
@@ -34,6 +35,13 @@ public class Server {
         socketList = new ArrayList<>();
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public static Server getInstance() {
         return INSTANCE;
@@ -45,13 +53,13 @@ public class Server {
 
     public void emitMessageAll(String message) {
         for (MySocket socket : socketList) {
-            socket.emitMessage(message);
+            socket.emitMessage(username, message);
         }
     }
 
     public void emitFileAll(String filePath, String filename) {
         for (MySocket socket : socketList) {
-            socket.emitFile(filePath, filename);
+            socket.emitFile(username, filePath, filename);
         }
     }
 
@@ -61,8 +69,15 @@ public class Server {
         }
     }
 
+    public void emitAllExcept(MySocket socket, MessagePackage messagePackage) {
+        for (MySocket socket1 : socketList) {
+            if (socket1.getSocketId() != socket.getSocketId()) {
+                socket1.emit(messagePackage);
+            }
+        }
+    }
 
-    public String getIpAddress() {
+    public static String getIpAddress() {
         String ip = "";
         try {
             Enumeration<NetworkInterface> enumNetworkInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -82,6 +97,11 @@ public class Server {
             // TODO Auto-generated catch block
             e.printStackTrace();
             ip += "Something Wrong! " + e + "\n";
+        }
+
+        if (ip.length()>47) {
+            int i = ip.indexOf("Server",5);
+            ip = Server.getIpAddress().substring(0,i);
         }
         return ip;
     }
@@ -134,6 +154,7 @@ public class Server {
 
                     socketList.add(mySocket);
                     mySocket.setNewMessageListener(new OnNewMessageListener());
+                    mySocket.setDisconnectListener((socket1) -> socket1.onDestroy());
                     mySocket.startReadingStream();
 
                 }

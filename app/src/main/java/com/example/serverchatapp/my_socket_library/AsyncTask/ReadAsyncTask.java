@@ -24,6 +24,11 @@ public class ReadAsyncTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
+        //Here we looking for incoming data from socket
+        //Every time has data on input stream, we will read it until end of stream
+        //Incoming message package structured in the following order: event -> sender -> fileSize (if file)
+        // -> message -> data in byte array (if file)
+        //kep running this task until an DISCONNECT event was sent to
         try {
             while (true) {
                 InputStream is = socket.getSocket().getInputStream();
@@ -32,28 +37,41 @@ public class ReadAsyncTask extends AsyncTask<Void, Void, Void> {
 
                 Log.d(TAG, "New Data");
                 MessagePackageBuilder builder = new MessagePackageBuilder();
+
+                //read event
                 String event = dis.readLine();
                 builder.setEvent(event);
+
+                //read sender name
+                String sender = dis.readUTF();
+                builder.setSender(sender);
+
                 Log.d(TAG, "Event: " + event);
+                Log.d(TAG, "Sender: " + sender);
+
                 if (event.equalsIgnoreCase(IO.SEND_FILE)) {
                     builder.setType(IO.SEND_FILE);
 
+                    //read file size
                     int fileSize = Integer.parseInt(dis.readLine());
                     Log.d(TAG, "file size: " + fileSize);
+
+                    //read filename as message properties
                     String filename = dis.readLine();
                     Log.d(TAG, "Filename: " + filename);
+
+                    //read data of file in byte array
                     byte[] bytes = new byte[fileSize];
-                    int count  = 0;
                     //dis.read(bytes);
                     dis.readFully(bytes);
                     Log.d(TAG, "byte array done!");
+
                     builder.setMessage(filename);
                     builder.setData(bytes);
                     builder.setDataSizeInByte(fileSize);
-
-
                 } else {
                     builder.setType(IO.SEND_MESSAGE);
+                    //read message
                     String message = dis.readUTF();
                     //String message = br.readLine();
                     builder.setMessage(message);
@@ -61,6 +79,8 @@ public class ReadAsyncTask extends AsyncTask<Void, Void, Void> {
 
                 MessagePackage messagePackage = builder.build();
                 Log.d(TAG, "Data received: " + messagePackage);
+
+                //if meet disconnect event, finish read task
                 if (messagePackage.getEvent().equalsIgnoreCase(IO.CLIENT_DISCONNECT)) {
                     socket.disconnectListener.onDisconnect(socket);
                     onDestroy();
@@ -68,60 +88,12 @@ public class ReadAsyncTask extends AsyncTask<Void, Void, Void> {
                 }
 
                 socket.newMessageListener.onNewMessage(socket, messagePackage);
+
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
-        /*sentence_from_client = "";
-
-        OutputStream os = socket.getSocket().getOutputStream();
-        InputStream is = socket.getSocket().getInputStream();
-        int control_byte;
-        InputStreamReader reader = new InputStreamReader(is);
-        BufferedReader inFromClient =
-                new BufferedReader(reader);
-
-        control_byte = is.read();
-
-        Log.d("SERVER TAG","Control byte: " + control_byte);
-        if (control_byte == Server.CLIENT_DISCONNECT || control_byte == -1) {
-            onDestroy();
-            return null;
-        }
-        else if (control_byte == Server.SEND_MESSAGE) {
-            sentence_from_client = inFromClient.readLine();
-            Log.d("SERVER TAG","New Message: " + sentence_from_client);
-            socket.listener.handleEvent(Server.SEND_MESSAGE,socket.getSocketId(),sentence_from_client);
-        } else if (control_byte == Server.SEND_FILE) {
-
-            String filename = inFromClient.readLine();
-            Log.d("SERVER TAG","File receive repairing. File name: " + filename);
-            File file = new File(Environment.getExternalStorageDirectory(),filename);
-            Log.d("SERVER TAG","File path: " + file.getPath());
-
-            int bytes = 0;
-            FileOutputStream fileOutputStream
-                    = new FileOutputStream(file);
-            DataInputStream dis = new DataInputStream(is);
-
-            long size
-                    = dis.readLong(); // read file size
-            byte[] buffer = new byte[4 * 1024];
-            while (size > 0
-                    && (bytes = dis.read(
-                    buffer, 0,
-                    (int)Math.min(buffer.length, size)))
-                    != -1) {
-                // Here we write the file using write method
-                fileOutputStream.write(buffer, 0, bytes);
-                size -= bytes; // read upto file size
-            }
-            // Here we received file
-            fileOutputStream.close();
-            Log.d("SERVER TAG", "file received!");
-            socket.newFileListener.handleFile(file.getPath(),filename);*/
         return null;
     }
 

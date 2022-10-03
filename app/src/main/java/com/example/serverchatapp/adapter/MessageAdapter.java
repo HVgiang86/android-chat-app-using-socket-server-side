@@ -4,7 +4,6 @@ package com.example.serverchatapp.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,16 +51,27 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String content = messageList.get(position).getContent();
-        holder.contentTv.setText(content);
-        Log.d("ADAPTER LOG", "content: " + messageList.get(position).getContent());
-        if (getItemViewType(position) == SERVER_FILE_TYPE || getItemViewType(position) == CLIENT_FILE_TYPE) {
+        Message message = messageList.get(position);
+        Log.d("Adapter log", "Item: Sender: " + message.getSender() + " Message: " + message.getContent());
+        if (getItemViewType(position) != SERVER_FILE_TYPE || getItemViewType(position) != SERVER_FILE_TYPE) {
+            String sender = message.getSender();
+            if (sender != null)
+                holder.senderTv.setText(sender.trim());
 
+        }
+
+        String content = message.getContent().trim();
+        if (getItemViewType(position) == CLIENT_MESSAGE_TYPE || getItemViewType(position) == SERVER_MESSAGE_TYPE)
+            holder.contentTv.setText(content);
+
+        if (getItemViewType(position) == SERVER_FILE_TYPE || getItemViewType(position) == CLIENT_FILE_TYPE) {
+            int i = content.lastIndexOf("/");
+            String filename = content.substring(i + 1);
+            holder.contentTv.setText(filename);
             holder.contentTv.setOnClickListener((v) -> {
                 showFileChooser(content);
                 Log.d("Adapter log", "FILE CLICKED!");
             });
-
         }
     }
 
@@ -90,17 +100,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         baseIntent.setType(type);
 
         int i = filePath.lastIndexOf("/");
-        Uri selectedUri = Uri.parse(filePath.substring(0,i));
-        Log.d("Adapter Log","test path: " + selectedUri);
+        Uri selectedUri = Uri.parse(filePath.substring(0, i));
+        Log.d("Adapter Log", "test path: " + selectedUri);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(selectedUri, "*/*");
 
-        if (intent.resolveActivityInfo(context.getPackageManager(), 0) != null)
-        {
+        if (intent.resolveActivityInfo(context.getPackageManager(), 0) != null) {
             context.startActivity(intent);
-        }
-        else
-        {
+        } else {
             if (baseIntent.resolveActivity(context.getPackageManager()) != null) {
                 context.startActivity(baseIntent);
             } else {
@@ -110,19 +117,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             }
 
         }
-        /*if (baseIntent.resolveActivity(context.getPackageManager()) != null) {
-            context.startActivity(baseIntent);
-        } else {
-
-        }*/
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView contentTv;
+        public TextView senderTv;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             contentTv = itemView.findViewById(R.id.message_content);
+            senderTv = itemView.findViewById(R.id.sender_name);
         }
     }
 }

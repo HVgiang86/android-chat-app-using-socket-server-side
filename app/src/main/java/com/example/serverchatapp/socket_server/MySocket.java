@@ -17,21 +17,22 @@ public class MySocket extends SingleSocket {
     public MySocket() {
     }
 
-    public void emitMessage(String message) {
+    public void emitMessage(String username, String message) {
         MessagePackageBuilder builder = new MessagePackageBuilder();
         builder.setEvent(IO.SEND_MESSAGE);
+        builder.setSender(username);
         builder.setType(IO.SEND_MESSAGE);
         builder.setMessage(message);
         emit(builder.build());
     }
 
-    public void emitFile(String filePath, String filename) {
+    public void emitFile(String username, String filePath, String filename) {
         File file = new File(filePath);
         MessagePackageBuilder builder = new MessagePackageBuilder();
         builder.setMessage(filename);
         builder.setEvent(IO.SEND_FILE);
         builder.setType(IO.SEND_FILE);
-
+        builder.setSender(username);
         try {
             builder.setDataFromFile(file);
         } catch (FileNotFoundException e) {
